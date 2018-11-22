@@ -1,0 +1,36 @@
+@{
+    ViewBag.Title = "Cadastro de Transação";
+    Layout = "MasterPageLogado";
+}
+
+<h1>Formulário de Cadastro de Transação</h1>
+
+@ViewBag.Mensagem
+
+<form method="POST" action="/Transacao/Cadastrar">
+    <label>
+        Descrição:
+        <input type="text" name="descricao" required="true">
+    </label>
+
+    <label>
+        Valor
+        <input type="text" name="valor"  required="true">
+    </label>
+
+    <label>
+        Tipo
+        <select name="tipo" required="true">
+            <option value="">Selecione</option>
+            <option value="despesa">Despesa</option>
+            <option value="receita">Receita</option>
+        </select>
+    </label>
+
+    <label>
+        Data da Transação
+        <input type="date" name="data"  required="true">
+    </label>
+
+    <input type="submit" value="Cadastrar">
+</form>

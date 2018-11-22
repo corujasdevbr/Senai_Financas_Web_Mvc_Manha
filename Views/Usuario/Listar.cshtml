@@ -1,0 +1,52 @@
+@using Senai.Financas.Web.Mvc.Models;
+
+@{
+    Layout = "MasterPageLogado";
+}
+
+<h3>Listagem de Usuários</h3>
+
+@TempData["Mensagem"]
+
+<table>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Data Nascimento</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewData["Usuarios"] as List<UsuarioModel>)
+        {
+            <tr>
+                <td>
+                    @item.Id
+                </td>
+                <td>
+                    @item.Nome
+                </td>
+                <td>
+                    @item.Email
+                </td>
+                <td>
+                    @item.DataNascimento.ToShortDateString()
+                </td>
+                <td>
+                    <a href="/Usuario/Excluir?id=@item.Id">Excluir</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<select name="usuarios">
+    @foreach (var item in ViewData["Usuarios"] as List<UsuarioModel>)
+    {
+        <option value="@item.Email">
+            @item.Nome
+        </option>
+    }
+</select>
