@@ -1,0 +1,42 @@
+@using Senai.Financas.Web.Mvc.Models;
+
+@{
+    ViewBag.Title = "Editar Usuário";
+    Layout = "MasterPageDeslogado";
+}
+
+@{
+    UsuarioModel usuario = ViewBag.Usuario;
+
+    string dataNascimento = usuario.DataNascimento.ToString("yyyy-MM-dd");
+}
+
+<h1>Formulário de Edição</h1>
+
+@ViewBag.Mensagem
+
+<form action="/Usuario/Editar" method="POST">
+    <input type="hidden" value="@usuario.Id" name="id">
+    <label>
+        Nome
+        <input type="text" value="@usuario.Nome" class="borda-amarela" name="nome">
+    </label>
+
+    <label>
+        Email
+        <input type="email" value="@usuario.Email" name="email">
+    </label>
+
+    <label>
+        Senha
+        <input type="password" value="@usuario.Senha" name="senha">
+    </label>
+
+    <label>
+        Data de Nascimento
+        <input type="date" value="@dataNascimento" name="dataNascimento" />
+    </label>
+
+    <input type="submit" value="Enviar">
+
+</form>

@@ -12,7 +12,7 @@ namespace Senai.Financas.Web.Mvc.Controllers
         [HttpGet]
         public IActionResult Cadastrar(){
 
-            if(string.IsNullOrEmpty(HttpContext.Session.GetString("emailUsuario"))){
+            if(string.IsNullOrEmpty(HttpContext.Session.GetString("idUsuario"))){
                 return RedirectToAction("Login", "Usuario");
             }
 

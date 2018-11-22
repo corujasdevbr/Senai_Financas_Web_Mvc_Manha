@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Senai.Financas.Web.Mvc.Models;
+using Senai_Financas_Mvc_Web_master.Repositorios;
 
 namespace Senai.Financas.Web.Mvc.Controllers {
     public class UsuarioController : Controller {
@@ -15,17 +16,13 @@ namespace Senai.Financas.Web.Mvc.Controllers {
         [HttpPost]
         public ActionResult Cadastrar (IFormCollection form) {
             UsuarioModel usuario = new UsuarioModel ();
-
-            usuario.Id = System.IO.File.ReadAllLines ("usuarios.csv").Length + 1;
-
             usuario.Nome = form["nome"];
             usuario.Email = form["email"];
             usuario.Senha = form["senha"];
             usuario.DataNascimento = DateTime.Parse (form["dataNascimento"]);
 
-            using (StreamWriter sw = new StreamWriter ("usuarios.csv", true)) {
-                sw.WriteLine ($"{usuario.Id};{usuario.Nome};{usuario.Email};{usuario.Senha};{usuario.DataNascimento}");
-            }
+            UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio();
+            usuarioRepositorio.Cadastrar(usuario);
 
             ViewBag.Mensagem = "Usuário Cadastrado";
 
@@ -39,94 +36,77 @@ namespace Senai.Financas.Web.Mvc.Controllers {
 
         [HttpPost]
         public IActionResult Login (IFormCollection form) {
-            UsuarioModel usuario = new UsuarioModel ();
-            usuario.Email = form["email"];
-            usuario.Senha = form["senha"];
+            UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio();
+            UsuarioModel usuario = usuarioRepositorio.Login(form["email"], form["senha"]);
 
-            using (StreamReader sr = new StreamReader ("usuarios.csv")) {
-                while (!sr.EndOfStream) {
-                    var linha = sr.ReadLine ();
-
-                    if (string.IsNullOrEmpty(linha))
-                    {
-                        continue;
-                    }
-
-                    string[] dados = linha.Split (";");
-
-                    if (dados[2] == usuario.Email && dados[3] == usuario.Senha) {
-                        HttpContext.Session.SetString ("emailUsuario", usuario.Email);
-                        return RedirectToAction ("Cadastrar", "Transacao");
-                    }
-                }
+            if(usuario != null){
+                HttpContext.Session.SetString("idUsuario", usuario.Id.ToString());
+                return RedirectToAction ("Cadastrar", "Transacao");
             }
 
             ViewBag.Mensagem = "Usuário inválido";
-
             return View ();
         }
 
         [HttpGet]
         public IActionResult Listar () {
-            List<UsuarioModel> lsUsuarios = new List<UsuarioModel> ();
+            UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio();
 
-            string[] linhas = System.IO.File.ReadAllLines ("usuarios.csv");
-
-            UsuarioModel usuario;
-
-            foreach (var item in linhas) {
-
-                //Verifica se a linha é vazia
-                if (string.IsNullOrEmpty (item)) {
-                    //Retorna para o foreach
-                    continue;
-                }
-
-                string[] linha = item.Split (';');
-
-                usuario = new UsuarioModel ();
-
-                usuario.Id = int.Parse (linha[0]);
-                usuario.Nome = linha[1];
-                usuario.Email = linha[2];
-                usuario.Senha = linha[3];
-                usuario.DataNascimento = DateTime.Parse (linha[4]);
-
-                lsUsuarios.Add (usuario);
-
-            }
-
-            ViewData["Usuarios"] = lsUsuarios;
+            ViewData["Usuarios"] = usuarioRepositorio.Listar();
 
             return View ();
         }
 
         [HttpGet]
         public IActionResult Excluir (int id) {
-            //Pega os dados do arquivo usuario.csv
-            string[] linhas = System.IO.File.ReadAllLines ("usuarios.csv");
-
-            //Percorre as linhas do arquivo
-            for (int i = 0; i < linhas.Length; i++) {
-                //Separa as colunas da linha
-                string[] linha = linhas[i].Split (';');
-
-                //Verifica se o id da linha é o id passado
-                if (id.ToString () == linha[0]) {
-                    //Defino a linha como vazia
-                    linhas[i] = "";
-                    break;
-                }
-            }
-
-            //Armazeno no arquivo csv todas as linhas
-            System.IO.File.WriteAllLines ("usuarios.csv", linhas);
+            
+            UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio();
+            usuarioRepositorio.Excluir(id);
 
             TempData["Mensagem"] = "Usuário excluído";
 
             return RedirectToAction ("Listar");
         }
     
-        
+        [HttpGet]
+        public IActionResult Editar(int id){
+
+            if(id == 0){
+                TempData["Mensagem"] = "Informe um usuário para editar";
+                return RedirectToAction("Listar");
+            }
+
+            UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio();
+            UsuarioModel usuario = usuarioRepositorio.BuscarPorId(id);
+
+            if(usuario != null){
+                ViewBag.Usuario = usuario;
+            } else {
+                TempData["Mensagem"] = "Usuário não encontrado";
+                return RedirectToAction("Listar");
+            }
+            
+            return View();
+        }
+    
+        [HttpPost]
+        public IActionResult Editar(IFormCollection form){
+            //Declara um objeto UsuarioModel e atribui os valores do form
+            UsuarioModel usuario = new UsuarioModel{
+                Id = int.Parse(form["id"]),
+                Nome = form["nome"],
+                Email = form["email"],
+                Senha = form["senha"],
+                DataNascimento = DateTime.Parse(form["dataNascimento"])
+            };
+
+            //Cria um objeto UsuarioRepositorio e edita
+            UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio();
+            usuarioRepositorio.Editar(usuario);
+
+            TempData["Mensagem"] = "Usuário editado";
+
+            return RedirectToAction("Listar");
+        }
     }
 }
