@@ -8,6 +8,7 @@ namespace Senai_Financas_Mvc_Web_master.Repositorios
 {
     public class UsuarioRepositorio : IUsuario
     {
+
         public UsuarioModel BuscarPorId(int id)
         {
             string[] linhas = System.IO.File.ReadAllLines("usuarios.csv");
@@ -17,12 +18,13 @@ namespace Senai_Financas_Mvc_Web_master.Repositorios
                 string[] dados = item.Split(';');
 
                 if (id.ToString() == dados[0]){
-                    UsuarioModel usuario = new UsuarioModel();
-                    usuario.Id = int.Parse(dados[0]);
-                    usuario.Nome = dados[1];
-                    usuario.Email = dados[2];
-                    usuario.Senha = dados[3];
-                    usuario.DataNascimento = DateTime.Parse(dados[4]);
+                    UsuarioModel usuario = new UsuarioModel(
+                                            id: int.Parse(dados[0]),
+                                            nome: dados[1],
+                                            email: dados[2],
+                                            senha: dados[3],
+                                            dataNascimento: DateTime.Parse(dados[4])
+                                        );
 
                     return usuario;
                 }
@@ -116,13 +118,13 @@ namespace Senai_Financas_Mvc_Web_master.Repositorios
 
                 string[] linha = item.Split (';');
 
-                usuario = new UsuarioModel ();
-
-                usuario.Id = int.Parse (linha[0]);
-                usuario.Nome = linha[1];
-                usuario.Email = linha[2];
-                usuario.Senha = linha[3];
-                usuario.DataNascimento = DateTime.Parse (linha[4]);
+                usuario = new UsuarioModel (
+                                            id: int.Parse (linha[0]),
+                                            nome: linha[1],
+                                            email: linha[2],
+                                            senha: linha[3],
+                                            dataNascimento: DateTime.Parse (linha[4])
+                                        );
 
                 lsUsuarios.Add (usuario);
             }
@@ -144,12 +146,13 @@ namespace Senai_Financas_Mvc_Web_master.Repositorios
                     string[] dados = linha.Split (";");
 
                     if (dados[2] == email && dados[3] == senha) {
-                        UsuarioModel usuario = new UsuarioModel();
-                        usuario.Id = int.Parse (dados[0]);
-                        usuario.Nome = dados[1];
-                        usuario.Email = dados[2];
-                        usuario.Senha = dados[3];
-                        usuario.DataNascimento = DateTime.Parse (dados[4]);
+                        UsuarioModel usuario = new UsuarioModel(
+                            id: int.Parse (dados[0]),
+                            nome: dados[1],
+                            email: dados[2],
+                            senha: dados[3],
+                            dataNascimento: DateTime.Parse (dados[4])
+                        );
 
                         return usuario;
                     }

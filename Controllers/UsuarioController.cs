@@ -14,12 +14,13 @@ namespace Senai.Financas.Web.Mvc.Controllers {
         }
 
         [HttpPost]
-        public ActionResult Cadastrar (IFormCollection form) {
-            UsuarioModel usuario = new UsuarioModel ();
-            usuario.Nome = form["nome"];
-            usuario.Email = form["email"];
-            usuario.Senha = form["senha"];
-            usuario.DataNascimento = DateTime.Parse (form["dataNascimento"]);
+        public ActionResult Cadastrar (IFormCollection form) {            
+            UsuarioModel usuario = new UsuarioModel(
+                                            nome: form["nome"], 
+                                            email: form["email"],
+                                            senha: form["senha"],
+                                            dataNascimento: DateTime.Parse (form["dataNascimento"])
+                                        );
 
             UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio();
             usuarioRepositorio.Cadastrar(usuario);
@@ -92,13 +93,13 @@ namespace Senai.Financas.Web.Mvc.Controllers {
         [HttpPost]
         public IActionResult Editar(IFormCollection form){
             //Declara um objeto UsuarioModel e atribui os valores do form
-            UsuarioModel usuario = new UsuarioModel{
-                Id = int.Parse(form["id"]),
-                Nome = form["nome"],
-                Email = form["email"],
-                Senha = form["senha"],
-                DataNascimento = DateTime.Parse(form["dataNascimento"])
-            };
+            UsuarioModel usuario = new UsuarioModel(
+                id: int.Parse(form["id"]),
+                nome: form["nome"],
+                email: form["email"],
+                senha: form["senha"],
+                dataNascimento: DateTime.Parse(form["dataNascimento"])
+            );
 
             //Cria um objeto UsuarioRepositorio e edita
             UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio();
